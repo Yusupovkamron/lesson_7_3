@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Artist, Albom, Songs
-from .serializers import ArtistSerializer, AlbomAPIViewSet, SongsSerializer
+from .serializers import ArtistSerializer,  SongsSerializer,AlbomSerializer
 import json
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
@@ -24,15 +24,9 @@ class ArtistApiView(APIView):
         return Response(data=serialisers.data)
 
 
-# class AlbomtApiView(APIView):
-#     def get(self, request):
-#         alboms = Albom.objects.all()
-#         serialisers = AlbomSerializer(alboms, many=True)
-#         return Response(data=serialisers.data)
-
-class AlbomAPIViewSet(APIView):
-    queryset = Albom.object.all()
-    serializer_class = AlbomAPIViewSet
+class AlbomAPIViewSet(ModelViewSet):
+    queryset = Albom.objects.all()
+    serializer_class = AlbomSerializer
 
 
 
