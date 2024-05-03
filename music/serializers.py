@@ -3,29 +3,24 @@ from .models import Artist, Albom, Songs
 
 
 class ArtistSerializer(serializers.ModelSerializer):
-    class Meda:
-        mode = Artist
+    class Meta:
+        model = Artist
         fields = "__all__"
 
 
 class AlbomSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer()
 
-
-    class Meda:
-        mode = Albom
+    class Meta:
+        model = Albom
         fields = "__all__"
 
 
 class SongsSerializer(serializers.ModelSerializer):
-    albom = AlbomSerializer()
+    albom = AlbomSerializer(read_only=True)
 
-
-
-
-    class Meda:
-        mode = Songs
+    class Meta:
+        model = Songs
         fields = "__all__"
-
 
 

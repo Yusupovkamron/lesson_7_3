@@ -20,8 +20,8 @@ class Albom(models.Model):
 
 class Songs(models.Model):
     title = models.CharField(max_length=30)
-    cover = models.URLField()
-    albom = models.ForeignKey(Albom, on_delete=models.CASCADE)
+    cover = models.URLField(null=True)
+    albom = models.ForeignKey(Albom, on_delete=models.CASCADE, null=True)
     last_update = models.DateField(auto_now=True)
     create_data = models.DateField(auto_now_add=True)
 

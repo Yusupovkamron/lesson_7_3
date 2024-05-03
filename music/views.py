@@ -2,8 +2,12 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Artist, Albom, Songs
-from .serializers import ArtistSerializer, AlbomSerializer, SongsSerializer
+from .serializers import ArtistSerializer, AlbomAPIViewSet, SongsSerializer
 import json
+from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
+
+
 
 class LandingPageAPIView(APIView):
     def get(self, request):
@@ -20,11 +24,15 @@ class ArtistApiView(APIView):
         return Response(data=serialisers.data)
 
 
-class AlbomtApiView(APIView):
-    def get(self, request):
-        alboms = Albom.objects.all()
-        serialisers = AlbomSerializer(alboms, many=True)
-        return Response(data=serialisers.data)
+# class AlbomtApiView(APIView):
+#     def get(self, request):
+#         alboms = Albom.objects.all()
+#         serialisers = AlbomSerializer(alboms, many=True)
+#         return Response(data=serialisers.data)
+
+class AlbomAPIViewSet(APIView):
+    queryset = Albom.object.all()
+    serializer_class = AlbomAPIViewSet
 
 
 
@@ -36,4 +44,35 @@ class SongsApiView(APIView):
         # with open("../data.json", 'w') as f:
         #     json.dump(data, f, indext=6)
         return Response(data=serialisers.data)
+
+
+class SongDetailAPIView(APIView):
+    def get(self, request, id):
+        try:
+            song = Songs.objects.get(id=id)
+            serializer = SongsSerializer(song)
+            return Response(data=serializer.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, id):
+        song = Songs.objects.get(id=id)
+        serializer = SongsSerializer(instance=song, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def put(self, request, id):
+        song = Songs.objects.get(id=id)
+        serializer = SongsSerializer(instance=song, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        song = Songs.objects.get(id=id)
+        song.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
