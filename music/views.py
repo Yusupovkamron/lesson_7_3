@@ -2,8 +2,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Artist, Albom, Songs
-from .serializers import ArtistSerializer,  SongsSerializer,AlbomSerializer
+from .models import Artist, Albom, Songs, Country
+from .serializers import ArtistSerializer,  SongsSerializer,AlbomSerializer, CountrySerializer
 import json
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
@@ -44,34 +44,10 @@ class SongSetAPIView(ModelViewSet):
     pagination_class = LimitOffsetPagination
 
 
-
-
-    # def get(self, request, id):
-    #     try:
-    #         song = Songs.objects.get(id=id)
-    #         serializer = SongsSerializer(song)
-    #         return Response(data=serializer.data)
-    #     except:
-    #         return Response(status=status.HTTP_404_NOT_FOUND)
-    #
-    # def patch(self, request, id):
-    #     song = Songs.objects.get(id=id)
-    #     serializer = SongsSerializer(instance=song, data=request.data, partial=True)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #
-    #
-    # def put(self, request, id):
-    #     song = Songs.objects.get(id=id)
-    #     serializer = SongsSerializer(instance=song, data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #
-    # def delete(self, request, id):
-    #     song = Songs.objects.get(id=id)
-    #     song.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-
-
+class CountrySetApiView(ModelViewSet):
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['^title']
+    pagination_class = LimitOffsetPagination
