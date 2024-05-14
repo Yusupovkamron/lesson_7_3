@@ -1,9 +1,12 @@
+from django.contrib.admin import action
+from django.db.transaction import atomic
+from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Artist, Albom, Songs, Country
-from .serializers import ArtistSerializer,  SongsSerializer,AlbomSerializer, CountrySerializer
+from .serializers import ArtistSerializer, SongsSerializer, AlbomSerializer, CountrySerializer
 import json
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
@@ -31,6 +34,12 @@ class AlbomAPIViewSet(ModelViewSet):
     queryset = Albom.objects.all()
     serializer_class = AlbomSerializer
 
+    @action(detail=True, methods=["GET"])
+    def albom(self, request, *args, **kwargs):
+        song = self.get_object()
+        albom = song.albom
+        serializer = AlbomSerializer(albom)
+        return Response(data=serializer.data)
 
 
 
@@ -38,11 +47,25 @@ class AlbomAPIViewSet(ModelViewSet):
 class SongSetAPIView(ModelViewSet):
     queryset = Songs.objects.all()
     serializer_class = SongsSerializer
-    authentication_classes = (TokenAuthentication, )
-    filter_backends = (filters.SearchFilter, )
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ['^title']
     pagination_class = LimitOffsetPagination
 
+    @action(detail=True, methods=["GET"])
+    def listen(self, request, *args, **kwargs):
+        song = self.get_object()
+        with atomic():
+            song.listened += 1
+            song.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=["GET"])
+    def top(self, request, *args, **kwargs):
+        songs = self.get_queryset()
+        songs = songs.order_by('-listened')[:2]
+        serializer = SongsSerializer(songs, many=True)
+        return Response(data=serializer.data)
 
 class CountrySetApiView(ModelViewSet):
     queryset = Country.objects.all()

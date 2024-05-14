@@ -31,6 +31,7 @@ class Country(models.Model):
     title = models.CharField(max_length=30)
     address = models.CharField(max_length=50)
     albom = models.ForeignKey(Songs, on_delete=models.CASCADE, null=True)
+    # listened = models.PositiveBigIntegerField(default=0)
     last_update = models.DateField(auto_now=True)
     create_data = models.DateField(auto_now_add=True)
 
